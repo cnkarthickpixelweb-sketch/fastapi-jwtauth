@@ -108,11 +108,14 @@ async def upload_profile_image( request: Request,file: Annotated[UploadFile, Fil
                     "message" : "User Not Found"
                 }
             )
-
-    if not file.content_type.startswith('image/'):
+    allowed_types = ["image/jpeg", "image/png", "image/webp"]
+    if file.content_type not in allowed_types:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"success" : False, "message" : "Invalid file type. Only images are allowed."}
+            status_code=400,
+            detail={
+                "success": False,
+                "message": f"Invalid file type: {file.content_type}"
+            }
         )
     
     filename = os.path.basename(file.filename)
